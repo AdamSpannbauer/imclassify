@@ -1,3 +1,13 @@
+# large files
+*.hdf5
+*.zip
+images/*
+images_old/*
+*.avi
+
+# pycharm
+.idea/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
