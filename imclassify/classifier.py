@@ -92,16 +92,14 @@ def text_bar_chart(labs, vals, length=10, display_val=False, highlight_max=False
     return bar_text_lines
 
 
-def video_classify(labels, model_path='model.pickle', video_capture=0, output_path=None):
+def video_classify(classifier, video_capture=0, output_path=None):
     """Wrapper of frame-by-frame image classification
 
-    :param labels: list of class label names (in same order as in model)
-    :param model_path: path to pickled model file
+    :param classifier: imclassify.classifier.Classifier object
     :param video_capture: value to be passed to cv2.VideoCapture
     :param output_path: optional output path for video to be written to
     :return: None
     """
-    predictor = Classifier(labels=labels, model_path=model_path)
     vidcap = cv2.VideoCapture(video_capture)
 
     writer = None
@@ -110,7 +108,7 @@ def video_classify(labels, model_path='model.pickle', video_capture=0, output_pa
         if not grabbed_frame:
             break
 
-        lab, probs = predictor.predict(frame)
+        lab, probs = classifier.predict(frame)
 
         put_alpha_centered_text(frame,
                                 text=lab,
@@ -118,7 +116,7 @@ def video_classify(labels, model_path='model.pickle', video_capture=0, output_pa
                                 font_scale=2,
                                 thickness=3)
 
-        bar_text = text_bar_chart(predictor.labels, probs, highlight_max=True)
+        bar_text = text_bar_chart(classifier.labels, probs, highlight_max=True)
         imutils.text.put_text(frame,
                               text=bar_text,
                               org=(10, 25),
@@ -146,20 +144,3 @@ def video_classify(labels, model_path='model.pickle', video_capture=0, output_pa
 
     if writer is not None:
         writer.release()
-
-
-if __name__ == '__main__':
-    import argparse
-    from .gather_images import try_int
-
-    ap = argparse.ArgumentParser()
-    ap.add_argument('-i', '--input_video', type=try_int, default=0,
-                    help='Path to input video. '
-                         '(can be number to indicate web cam; see cv2.VideoCapture docs)')
-    ap.add_argument('-m', '--model_path', default='model.pickle',
-                    help='Path to binary classification model')
-    args = vars(ap.parse_args())
-
-    video_classify(labels=['Married', 'Not Married'],
-                   model_path=args['model_path'],
-                   video_capture=args['input_video'])

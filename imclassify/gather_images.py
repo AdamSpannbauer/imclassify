@@ -26,34 +26,24 @@ def update_flag(key_press, current_flag, flags):
             return k
 
 
-def try_int(x):
-    """Helper to accept int and str from argparse for cv2.VideoCapture
-
-    :param x: input from argparse
-    :return: x converted to int; if Value error x returned unchanged
-    """
-    try:
-        return int(x)
-    except ValueError:
-        return x
-
-
-def prompt_labels(n_class=2):
+def prompt_labels():
     """Prompt user for class labels and map them to keys for gathering training data
 
-    :param n_class: number of classes to prompt labels for
     :return: tuple of labels and key press their mapped to
     """
+    n_class = int(input(f'Number of classes to input: '))
+
     if n_class > 26:
-        raise ValueError('Only supports up to 26 classes')
+        raise ValueError('Only supports up to 26 classes.')
 
     keys = list(string.ascii_lowercase[:n_class])
 
-    labels = []
+    labels = {}
     for key in keys:
         label = input(f'Label for key press "{key}": ')
-        labels.append(label)
-    return labels, keys
+        labels[key] = label
+
+    return labels
 
 
 def mkdirs(dir_names):
@@ -67,23 +57,21 @@ def mkdirs(dir_names):
             os.mkdir(dir_name)
 
 
-def gather_images(output_dir, labels=None, n_classes=2, video_capture=0, snapshot=True):
+def gather_images(output_dir, labels=None, video_capture=0, snapshot=True):
     """Capture training data for building a 2 class model
 
     :param output_dir: main dir for images to be saved to (they will saved to a subdir named by `labels`)
     :param labels: len 2 list of labels for the classes (a will be key for position 0 and b for 1)
-    :param n_classes: number of classes
     :param video_capture: value to pass to `cv2.VideoCapture()`
     :param snapshot: Should only a snapshot be taken when key pressed?
                      If False, a keypress toggles continuous capture mode.
     :return: None; images are saved to output_dir
     """
     if labels is None:
-        labels, keys = prompt_labels(n_classes)
+        label_key_dict = prompt_labels()
     else:
         keys = list(string.ascii_lowercase[:len(labels)])
-
-    label_key_dict = {k: v for k, v in zip(keys, labels)}
+        label_key_dict = {k: v for k, v in zip(keys, labels)}
 
     # Ensure dirs exist (create them if not)
     output_sub_dirs = [os.path.join(output_dir, l) for l in labels]
@@ -113,27 +101,3 @@ def gather_images(output_dir, labels=None, n_classes=2, video_capture=0, snapsho
             capture_flag = None
 
     cv2.destroyAllWindows()
-
-
-if __name__ == '__main__':
-    import argparse
-
-    ap = argparse.ArgumentParser()
-    ap.add_argument('-i', '--input', type=try_int, default=0,
-                    help='Path to input video. '
-                         '(can be number to indicate web cam; see cv2.VideoCapture docs)')
-    ap.add_argument('-o', '--output', default='images',
-                    help='Main dir for images to be saved to. '
-                         '(they will saved to a subdir defined by FLAGS dict)')
-    ap.add_argument('-n', '--n_classes', type=int, default=2,
-                    help='Number of classes to define')
-    ap.add_argument('-s', '--snapshot', default=1,
-                    help='Should only a snapshot be taken when key pressed (1 if yes)? '
-                         'Alternative is a keypress toggles continuous capture mode.')
-    args = vars(ap.parse_args())
-
-    is_snapshot = args['snapshot'] == 1
-    gather_images(output_dir=args['output'],
-                  video_capture=args['input'],
-                  n_classes=args['n_classes'],
-                  snapshot=is_snapshot)

@@ -8,7 +8,6 @@ import random
 import cv2
 import numpy as np
 from tqdm import tqdm
-import imutils.paths
 from keras.applications import VGG16
 from keras.applications import imagenet_utils
 from sklearn.preprocessing import LabelEncoder
@@ -105,22 +104,3 @@ def extract_features(image_paths, hdf5_file, batch_size=32, buffer_size=1000):
         dataset.add(feats, batch_labels)
 
     dataset.close()
-
-
-if __name__ == '__main__':
-    import argparse
-    random.seed(42)
-
-    ap = argparse.ArgumentParser()
-    ap.add_argument('-d', '--dataset', default='images',
-                    help='path to input dataset')
-    ap.add_argument('-o', '--output', default='features.hdf5',
-                    help='path to output HDF5 file')
-    ap.add_argument('-b', '--batch_size', type=int, default=32,
-                    help='batch size of images to be passed through network')
-    ap.add_argument('-s', '--buffer_size', type=int, default=1000,
-                    help='size of feature extraction buffer')
-    args = vars(ap.parse_args())
-
-    im_paths = list(imutils.paths.list_images(args['dataset']))
-    extract_features(im_paths, args['output'], args['batch_size'])
