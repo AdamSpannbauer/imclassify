@@ -12,7 +12,7 @@ import imutils.paths
 from keras.applications import VGG16
 from keras.applications import imagenet_utils
 from sklearn.preprocessing import LabelEncoder
-from hdf5_dataset_writer import HDF5DatasetWriter
+from .hdf5_dataset_writer import HDF5DatasetWriter
 
 
 class FeatureExtractor:

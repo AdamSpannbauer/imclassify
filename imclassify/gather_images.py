@@ -29,7 +29,7 @@ def update_flag(key_press, current_flag, flags):
 def try_int(x):
     """Helper to accept int and str from argparse for cv2.VideoCapture
 
-    :param x: input from arparse
+    :param x: input from argparse
     :return: x converted to int; if Value error x returned unchanged
     """
     try:

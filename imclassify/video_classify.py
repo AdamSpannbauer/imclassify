@@ -3,11 +3,11 @@ import pickle
 import numpy as np
 import cv2
 import imutils.text
-from extract_features import FeatureExtractor
+from .extract_features import FeatureExtractor
 
 
 class Classifier:
-    """Wrapper class to hold imnet feature extractor/classifier
+    """Wrapper class to hold imagenet feature extractor/classifier
 
     :param labels: Model class labels for [0, 1] classes
     :param model_path: File path to pickled sklearn binary classifier
@@ -15,10 +15,7 @@ class Classifier:
     """
     def __init__(self, labels=None, model_path='model.pickle', threshold=0.5):
         self.threshold = threshold
-        if labels is None:
-            self.labels = ['Married', 'Not Married']
-        else:
-            self.labels = labels
+        self.labels = labels
         self._feature_extractor = FeatureExtractor()
 
         with open(model_path, 'rb') as f:
@@ -153,7 +150,7 @@ def video_classify(labels, model_path='model.pickle', video_capture=0, output_pa
 
 if __name__ == '__main__':
     import argparse
-    from gather_images import try_int
+    from .gather_images import try_int
 
     ap = argparse.ArgumentParser()
     ap.add_argument('-i', '--input_video', type=try_int, default=0,
