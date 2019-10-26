@@ -1,8 +1,8 @@
 # large files
 *.hdf5
 *.zip
+*.pickle
 images/*
-images_old/*
 *.avi
 
 # pycharm
