@@ -1,10 +1,7 @@
 from setuptools import setup
 
-with open('README.md', 'r') as f:
-    long_description = f.read()
-
 version = {}
-with open("vidstab/version.py") as f:
+with open("imclassify/version.py") as f:
     exec(f.read(), version)
 
 setup(name='imclassify',
