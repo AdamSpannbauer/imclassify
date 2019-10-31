@@ -3,6 +3,7 @@ import os
 import string
 import uuid
 import cv2
+import imutils.text
 
 
 def update_flag(key_press, current_flag, flags):
@@ -46,6 +47,21 @@ def prompt_labels():
     return labels
 
 
+def draw_labels(image, labels):
+    header = 'Press the below keys to capture data for each class'
+    lines = [f'   {k} - {v}' for k, v in labels.items()]
+    lines = [header] + lines
+    text = '\n'.join(lines)
+
+    imutils.text.put_text(image,
+                          text,
+                          org=(10, 25),
+                          font_face=cv2.FONT_HERSHEY_SIMPLEX,
+                          font_scale=0.7,
+                          color=(0, 0, 255),
+                          thickness=2)
+
+
 def mkdirs(dir_names):
     """Create dirs if they don't exist
 
@@ -84,7 +100,9 @@ def gather_images(output_dir, labels=None, video_capture=0, snapshot=True):
         if not grabbed_frame:
             break
 
-        cv2.imshow('Gather Training Data (ESC to quit)', frame)
+        display_frame = frame.copy()
+        draw_labels(display_frame, label_key_dict)
+        cv2.imshow('Gather Training Data (ESC to quit)', display_frame)
         key = cv2.waitKey(10)
 
         if key == 27:
