@@ -9,12 +9,10 @@ from .extract_features import FeatureExtractor
 class Classifier:
     """Wrapper class to hold imagenet feature extractor/classifier
 
-    :param labels: Model class labels for [0, 1] classes
-    :param model_path: File path to pickled sklearn binary classifier
-    :param threshold: Cutoff to be considered class 1 (if prob(0) <= threshold then label is 1)
+    :param labels: Names for classes being predicted
+    :param model_path: File path to pickled sklearn classifier
     """
-    def __init__(self, labels=None, model_path='model.pickle', threshold=0.5):
-        self.threshold = threshold
+    def __init__(self, labels=None, model_path='model.pickle'):
         self.labels = labels
         self._feature_extractor = FeatureExtractor()
 
@@ -22,6 +20,11 @@ class Classifier:
             self.model = pickle.load(f)
 
     def predict(self, image):
+        """Predict class for a single input image
+
+        :param image: image to classify
+        :return: tuple of (class_label, probabilities)
+        """
         features = self._feature_extractor.extract_features_cv2(image)
         probabilities = self.model.predict_proba(features)[0]
 

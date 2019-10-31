@@ -8,6 +8,17 @@ import h5py
 
 
 class HDF5DatasetWriter:
+    """Utility for working with h5py
+
+    Modified from:
+        https://gurus.pyimagesearch.com/topic/transfer-learning-example-dogs-and-cats/
+
+    :param dims: shape of data to be written to `output_path`
+    :param output_path: file path to write data to
+    :param data_key: name of dataset
+    :param buff_size: how many rows of data to hold in memory before dumping to disk
+    :param overwrite: should file at `output_path` be overwritten if it exists
+    """
     def __init__(self, dims, output_path, data_key='images', buff_size=1000, overwrite=False):
         # check to see if the output path exists, and if so, raise an exception
         if os.path.exists(output_path) and not overwrite:
@@ -32,7 +43,7 @@ class HDF5DatasetWriter:
         self.idx = 0
 
     def add(self, rows, labels):
-        # add the rows and labels to the buffer
+        """Add data to hdf5"""
         self.buffer['data'].extend(rows)
         self.buffer['labels'].extend(labels)
 
@@ -41,7 +52,7 @@ class HDF5DatasetWriter:
             self.flush()
 
     def flush(self):
-        # write the buffers to disk then reset the buffer
+        """Write the buffers to disk then reset the buffer"""
         i = self.idx + len(self.buffer['data'])
         self.data[self.idx:i] = self.buffer['data']
         self.labels[self.idx:i] = self.buffer['labels']
@@ -49,15 +60,13 @@ class HDF5DatasetWriter:
         self.buffer = {'data': [], 'labels': []}
 
     def store_class_labels(self, class_labels):
-        # create a data set to store the actual class label names,
-        # then store the class labels
+        """Create a data set to store the actual class label names"""
         dt = h5py.special_dtype(vlen=str)
         label_set = self.db.create_dataset('label_names', (len(class_labels),), dtype=dt)
         label_set[:] = class_labels
 
     def close(self):
-        # check to see if there are any other entries in the buffer
-        # that need to be flushed to disk
+        """Close connection to hdf5 file"""
         if len(self.buffer['data']) > 0:
             self.flush()
 
