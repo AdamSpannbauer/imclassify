@@ -6,3 +6,4 @@ numpy
 opencv-contrib-python
 tqdm
 h5py
+Gooey

@@ -20,10 +20,10 @@ def update_flag(key_press, current_flag, flags):
     key_press = chr(key_press)
     for k in flags.keys():
         if k == key_press and k == current_flag:
-            print(f'Stop capturing for {k}')
+            print(f'Stop capturing for {flags[k]}')
             return None
         elif k == key_press:
-            print(f'Capturing for {k}')
+            print(f'Capturing for {flags[k]}')
             return k
 
 
@@ -102,6 +102,7 @@ def gather_images(output_dir, labels=None, video_capture=0, snapshot=True):
 
         display_frame = frame.copy()
         draw_labels(display_frame, label_key_dict)
+        display_frame = imutils.resize(display_frame, width=750)
         cv2.imshow('Gather Training Data (ESC to quit)', display_frame)
         key = cv2.waitKey(10)
 
