@@ -26,8 +26,12 @@ if __name__ == '__main__':
                     help='path to output model to')
     args = vars(ap.parse_args())
 
-    im_classifier = ImClassifier(labels=args['labels'])
-    im_classifier.gather_images(video_path=0)
+    im_classifier = ImClassifier(labels=args['labels'],
+                                 images_path=args['train_output'],
+                                 features_path=args['feature_db'],
+                                 model_path=args['model_output'])
+
+    im_classifier.gather_images(video_path=args['train_input'])
     im_classifier.extract_features()
     im_classifier.train_model(percent_train=1.0)
-    im_classifier.classify_video()
+    im_classifier.classify_video(video_path=args['train_input'])
